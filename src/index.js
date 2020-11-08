@@ -59,22 +59,37 @@ io.on('connection', socket => {
         else{
             let newMessage = checkEmoji(message)
             let date = new Date()
-            chats.push({
-                userId: socket.request.session.user.id,
-                name: socket.request.session.user.name,
-                color: socket.request.session.user.color,
-                hours: date.getHours(),
-                minutes: date.getMinutes(),
-                payload: newMessage
-            })
-            io.emit('MESSAGE', {
-                userId: socket.request.session.user.id,
-                name: socket.request.session.user.name,
-                color: socket.request.session.user.color,
-                hours: date.getHours(),
-                minutes: date.getMinutes(),
-                payload: newMessage
-            })
+            if(chats.length < 200){
+                chats.push({
+                    userId: socket.request.session.user.id,
+                    name: socket.request.session.user.name,
+                    color: socket.request.session.user.color,
+                    hours: date.getHours(),
+                    minutes: date.getMinutes(),
+                    payload: newMessage
+                })
+                io.emit('MESSAGE', {
+                    userId: socket.request.session.user.id,
+                    name: socket.request.session.user.name,
+                    color: socket.request.session.user.color,
+                    hours: date.getHours(),
+                    minutes: date.getMinutes(),
+                    payload: newMessage
+                })
+            }else{
+                chats.shift()
+                chats.push({
+                    userId: socket.request.session.user.id,
+                    name: socket.request.session.user.name,
+                    color: socket.request.session.user.color,
+                    hours: date.getHours(),
+                    minutes: date.getMinutes(),
+                    payload: newMessage
+                })
+                io.emit('CHATS',  chats)
+
+
+            }
         }
     })
     socket.on('EXSIST', user => {
